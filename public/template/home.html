@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {{ template "_head.html" . }}
-</head>
-<body>
+{{ template "_base.html" . }}
 
-    <h1>{{ .title }}</h1>
-</body>
-</html>
+{{ define "page" }}
+<div id="content">
+    sample
+</div>
+{{ end }}
