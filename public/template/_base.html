@@ -5,11 +5,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ .title }}</title>
-    
+    <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/bootstrap-icons/font/bootstrap-icons.css">
 </head>
 
 <body>
-    {{ template "page" .}}
+
+    <div class="vh-100 d-flex">
+        <div class="overflow-y-auto px-2 py-4" style="width: 240px;">
+            <h6>基础配置</h6>
+            <nav class="nav nav-pills flex-column">
+                <a class="nav-link {{if eq .ActivePage "band"}}active{{end}}" aria-current="page" href="#">Band</a>
+            </nav>
+        </div>
+
+        <div class="flex-fill d-flex overflow-y-auto px-1 py-4">
+            <div class="flex-fill">
+                {{ template "page" .}}
+            </div>
+            <div class="px-2 pt-2 pb-4 sticky-top" style="width: 420px;" id="iframeRoot">
+                <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Basic radio toggle button group">
+                    <input type="radio" class="btn-check" name="iframeMode" id="btnradio1" autocomplete="off" value="420" checked>
+                    <label class="btn btn-outline-primary" for="btnradio1">
+                        <i class="bi bi-phone"></i>
+                    </label>
+
+                    <input type="radio" class="btn-check" name="iframeMode" id="btnradio2" autocomplete="off" value="960">
+                    <label class="btn btn-outline-primary" for="btnradio2">
+                        <i class="bi bi-window-desktop"></i>
+                    </label>
+                </div>
+                <iframe src="/chat" class="border w-100 h-75"></iframe>
+            </div>
+        </div>
+    </div>
+    <script src="/static/@popperjs/core/dist/umd/popper.min.js"></script>
+    <script src="/static/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/static/jquery/dist/jquery.min.js"></script>
+    <script>
+        const iframeRoot = $('#iframeRoot')
+        $('input[type="radio"][name="iframeMode"]').change(function() {
+            // 获取选中的 radio 按钮的 value 值
+            var selectedValue = $(this).val();
+            iframeRoot.width(selectedValue)
+            refreshIframe()
+        });
+
+        const refreshIframe = () => {
+            iframeRoot.find('iframe')[0].contentWindow.location.reload();
+        }
+    </script>
 </body>
 
 </html>

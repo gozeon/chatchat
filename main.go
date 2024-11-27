@@ -1,6 +1,8 @@
 package main
 
 import (
+	"chatchat/database"
+	"chatchat/model"
 	"chatchat/public"
 	"log"
 	"net/http"
@@ -19,6 +21,18 @@ func init() {
 }
 
 func main() {
+	// 创建并打开数据库
+	db := &database.BoltDB{}
+	err := db.Open("example.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	band := model.NewBand(db)
+
+	// 初始化
+	band.Init()
 
 	e := echo.New()
 	e.Renderer = public.New()
@@ -34,10 +48,21 @@ func main() {
 
 	e.GET("/", func(c echo.Context) error {
 		c.Logger().Print(c.Logger().Level())
-		return c.Render(http.StatusOK, "home.html", map[string]interface{}{
-			"title": "Home",
+		return c.Redirect(302, c.Echo().Reverse("Band"))
+	})
+	e.GET("/chat", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "chat.html", map[string]interface{}{
+			"Band": band.Get(),
 		})
 	})
+	e.GET("/band", func(c echo.Context) error {
+
+		return c.Render(http.StatusOK, "band.html", map[string]interface{}{
+			"title":      "Band",
+			"ActivePage": "band",
+		})
+	}).Name = "Band"
 
 	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
+
 }

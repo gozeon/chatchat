@@ -1,0 +1,7 @@
+tmp
+*.db
+
+public/static/bootstrap
+public/static/bootstrap-icons
+public/static/jquery
+public/static/@popperjs
