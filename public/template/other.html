@@ -1,0 +1,24 @@
+{{ template "_base.html" . }}
+
+{{ define "page" }}
+<div class="mb-3">
+    <label for="placeholder" class="form-label">输入框占位符</label>
+    <input type="email" class="form-control" id="placeholder" placeholder="问题咨询" value="{{.Other.Placeholder}}">
+</div>
+{{ end }}
+
+{{ define "script" }}
+<script>
+    const { fromEvent, debounceTime, map, filter } = rxjs
+
+    fromEvent(document.querySelector('#placeholder'), "input")
+        .pipe(
+            debounceTime(500),
+            map(event => event.target.value)
+        )
+        .subscribe(value => {
+            saveConfig("other", "placeholder", value)
+        })
+
+</script>
+{{ end }}

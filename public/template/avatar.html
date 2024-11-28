@@ -1,0 +1,112 @@
+{{ template "_base.html" . }}
+
+{{ define "page" }}
+<div class="alert alert-warning" role="alert">
+    默认所有消息类型都显示头像
+</div>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button"
+            role="tab" aria-controls="home-tab-pane" aria-selected="true">用户</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button"
+            role="tab" aria-controls="profile-tab-pane" aria-selected="false">机器人</button>
+    </li>
+
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+        <div class="mb-3">
+            <label for="username" class="form-label">名称</label>
+            <input type="email" class="form-control" id="username" placeholder="不填则不显示" value="{{.Avatar.User.Name}}">
+        </div>
+        <div class="mb-3">
+            <label for="userAvatar" class="form-label">头像</label>
+            <img src="{{.Avatar.User.Avatar}}" class="img-thumbnail d-block mb-3" style="width: 80px;" id="userAvatarPreview">
+            <input type="file" class="form-control" id="userAvatar" accept="image/*">
+        </div>
+    </div>
+    <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+        <div class="mb-3">
+            <label for="robotname" class="form-label">名称</label>
+            <input type="email" class="form-control" id="robotname" placeholder="不填则不显示" value="{{.Avatar.Robot.Name}}">
+        </div>
+        <div class="mb-3">
+            <label for="robotAvatar" class="form-label">Logo</label>
+            <img src="{{.Avatar.Robot.Avatar}}" class="img-thumbnail d-block mb-3" style="width: 80px;" id="robotAvatarPreview">
+            <input type="file" class="form-control" id="robotAvatar" accept="image/*">
+        </div>
+    </div>
+</div>
+{{ end }}
+
+{{ define "script" }}
+<script>
+    var config = {{ .Avatar }}
+    const { fromEvent, debounceTime, map, filter } = rxjs
+
+    fromEvent(document.querySelector('#username'), "input")
+        .pipe(
+            debounceTime(500),
+            map(event => event.target.value)
+        )
+        .subscribe(value => {
+            _.set(config, "user.name", value)
+            saveConfig("avatar", "config", JSON.stringify(config))
+        })
+
+    fromEvent(document.querySelector('#robotname'), "input")
+        .pipe(
+            debounceTime(500),
+            map(event => event.target.value)
+        )
+        .subscribe(value => {
+            _.set(config, "robot.name", value)
+            saveConfig("avatar", "config", JSON.stringify(config))
+        })
+
+    fromEvent(document.querySelector('#userAvatar'), 'change')
+        .pipe(
+            // 过滤出有效的文件选择
+            filter(event => event.target.files.length > 0),
+            map(event => event.target.files[0]) // 获取第一个文件
+        ).subscribe(file => {
+            // 检查文件是否是图片
+            if (file && file.type.startsWith('image/')) {
+                uploadFile(file).then(url => {
+                    _.set(config, "user.avatar", url)
+                    saveConfig("avatar", "config", JSON.stringify(config)).then(res => {
+                        // 图片加载成功后，设置图片预览
+                        document.querySelector('#userAvatarPreview').src = url;
+                    })
+                })
+            } else {
+                document.querySelector('#userAvatar').value = null
+                Toast.fire({ icon: "warning", title: "请选择有效的图片文件！" });
+            }
+        })
+
+    fromEvent(document.querySelector('#robotAvatar'), 'change')
+        .pipe(
+            // 过滤出有效的文件选择
+            filter(event => event.target.files.length > 0),
+            map(event => event.target.files[0]) // 获取第一个文件
+        ).subscribe(file => {
+            // 检查文件是否是图片
+            if (file && file.type.startsWith('image/')) {
+                uploadFile(file).then(url => {
+                    _.set(config, "robot.avatar", url)
+                    saveConfig("avatar", "config", JSON.stringify(config)).then(res => {
+                        // 图片加载成功后，设置图片预览
+                        document.querySelector('#robotAvatarPreview').src = url;
+                    })
+                })
+            } else {
+                document.querySelector('#robotAvatar').value = null
+                Toast.fire({ icon: "warning", title: "请选择有效的图片文件！" });
+            }
+        })
+</script>
+{{ end }}

@@ -1,17 +1,61 @@
 {{ template "_base.html" . }}
 
 {{ define "page" }}
-<div class="container text-center">
-    <div class="row">
-        <div class="col">
-            Column
-        </div>
-        <div class="col">
-            Column
-        </div>
-        <div class="col">
-            Column
-        </div>
-    </div>
+<div class="mb-3">
+    <label for="name" class="form-label">名称</label>
+    <input type="email" class="form-control" id="name" placeholder="ChatChat 客服" value="{{.Band.Name}}">
 </div>
+<div class="mb-3">
+    <label for="url" class="form-label">链接</label>
+    <input type="email" class="form-control" id="url" placeholder="http://xx.com" value="{{.Band.Url}}">
+</div>
+<div class="mb-3">
+    <label for="logo" class="form-label">Logo</label>
+    <img src={{.Band.Logo}} class="img-thumbnail d-block mb-3" style="width: 80px;" id="previewImage">
+    <input type="file" class="form-control" id="logo" accept="image/*">
+</div>
+{{ end }}
+
+{{ define "script" }}
+<script>
+    const { fromEvent, debounceTime, map, filter } = rxjs
+
+    fromEvent(document.querySelector('#name'), "input")
+        .pipe(
+            debounceTime(500),
+            map(event => event.target.value)
+        )
+        .subscribe(value => {
+            saveConfig("band", "name", value)
+        })
+
+    fromEvent(document.querySelector('#url'), "input")
+        .pipe(
+            debounceTime(500),
+            map(event => event.target.value)
+        )
+        .subscribe(value => {
+            saveConfig("band", "url", value)
+        })
+
+    fromEvent(document.querySelector('#logo'), 'change')
+        .pipe(
+            // 过滤出有效的文件选择
+            filter(event => event.target.files.length > 0),
+            map(event => event.target.files[0]) // 获取第一个文件
+        ).subscribe(file => {
+            // 检查文件是否是图片
+            if (file && file.type.startsWith('image/')) {
+                uploadFile(file).then(url => {
+                    saveConfig("band", "logo", url).then(res => {
+                        // 图片加载成功后，设置图片预览
+                        document.querySelector('#previewImage').src = url;
+                    })
+                })
+            } else {
+                document.querySelector('#logo').value = null
+                Toast.fire({ icon: "warning", title: "请选择有效的图片文件！" });
+            }
+        })
+</script>
 {{ end }}

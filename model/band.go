@@ -3,9 +3,9 @@ package model
 import "chatchat/database"
 
 type Band struct {
-	Logo string
-	Url  string
-	Name string
+	Logo string `json:"logo"`
+	Url  string `json:"url"`
+	Name string `json:"name"`
 
 	db *database.BoltDB
 }
