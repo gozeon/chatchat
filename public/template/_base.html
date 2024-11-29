@@ -27,23 +27,46 @@
                 {{ template "page" .}}
             </div>
             <div class="px-2 pt-2 pb-4 sticky-top" style="width: 420px;" id="iframeRoot">
-                <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Basic radio toggle button group">
-                    <input type="radio" class="btn-check" name="iframeMode" id="btnradio1" autocomplete="off"
-                        value="420" checked>
-                    <label class="btn btn-outline-primary" for="btnradio1">
-                        <i class="bi bi-phone"></i>
-                    </label>
 
-                    <input type="radio" class="btn-check" name="iframeMode" id="btnradio2" autocomplete="off"
-                        value="960">
-                    <label class="btn btn-outline-primary" for="btnradio2">
-                        <i class="bi bi-window-desktop"></i>
-                    </label>
-                </div>
+                <div class="btn-toolbar mb-2" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="btn-group btn-group-sm me-2" role="group" aria-label="First group">
+                        <input type="radio" class="btn-check" name="iframeMode" id="btnradio1" autocomplete="off" value="420" checked>
+                        <label class="btn btn-outline-primary" for="btnradio1">
+                            <i class="bi bi-phone"></i>
+                        </label>
+
+                        <input type="radio" class="btn-check" name="iframeMode" id="btnradio2" autocomplete="off" value="960">
+                        <label class="btn btn-outline-primary" for="btnradio2">
+                            <i class="bi bi-window-desktop"></i>
+                        </label>
+                    </div>
+
+                    <div class="btn-group btn-group-sm me-2" role="group" aria-label="Second group">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#linkModal">
+                            <i class="bi bi-link-45deg"></i>
+                        </button>
+                    </div>
+                    
+                  </div>
                 <iframe src="/chat" class="border w-100 h-75"></iframe>
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="linkModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="height: 35vh;">
+                   <iframe src="/link" frameborder="0" class="w-100 h-100"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="/static/@popperjs/core/dist/umd/popper.min.js"></script>
     <script src="/static/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/static/jquery/dist/jquery.min.js"></script>

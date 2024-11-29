@@ -1,0 +1,48 @@
+<link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/bootstrap-icons/font/bootstrap-icons.css">
+
+
+<div class="d-flex mb-3 align-items-center">
+    <img class="img-thumbnail me-2" style="width: 80px;" id="copylinkQrcode">
+    <div class="input-group">
+        <input type="text" class="form-control form-control-sm" id="copylink" readonly>
+        <button class="btn btn-outline-secondary" type="button" data-clipboard-target="#copylink">
+            <i class="bi bi-clipboard"></i>
+        </button>
+    </div>
+</div>
+<div class="d-flex mb-3 align-items-center">
+    <img class="img-thumbnail me-2" style="width: 80px;" id="copylinkDebugQrcode">
+    <div class="input-group">
+        <input type="text" class="form-control form-control-sm" id="copylinkDebug" readonly>
+        <button class="btn btn-outline-secondary" type="button" data-clipboard-target="#copylinkDebug">
+            <i class="bi bi-clipboard"></i>
+        </button>
+    </div>
+</div>
+
+<script src="/static/clipboard/dist/clipboard.min.js"></script>
+<script src="/static/qrcode/build/qrcode.js"></script>
+
+<script>
+    (() => {
+        var url = new URL(location.href)
+        url.pathname = "/chat"
+        document.querySelector('#copylink').value = url.href
+        QRCode.toDataURL(url.href, function (err, url) {
+            document.querySelector('#copylinkQrcode').src = url
+        })
+
+        url.searchParams.set("debug", 1)
+        document.querySelector('#copylinkDebug').value = url.href
+        QRCode.toDataURL(url.href, function (err, url) {
+            document.querySelector('#copylinkDebugQrcode').src = url
+        })
+
+        var clipboard = new ClipboardJS('.btn');
+        clipboard.on('success', function (e) {
+            Toast.fire({ icon: "success", title: "复制成功" });
+            e.clearSelection();
+        });
+    })()
+</script>

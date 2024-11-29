@@ -19,6 +19,7 @@ func New() *tmpl {
 	templates["band.html"] = template.Must(template.ParseFS(TemplateDir, "template/_base.html", "template/band.html"))
 	templates["avatar.html"] = template.Must(template.ParseFS(TemplateDir, "template/_base.html", "template/avatar.html"))
 	templates["other.html"] = template.Must(template.ParseFS(TemplateDir, "template/_base.html", "template/other.html"))
+	templates["link.html"] = template.Must(template.ParseFS(TemplateDir, "template/link.html"))
 
 	return &tmpl{
 		// templates: template.Must(template.ParseGlob("public/template/*.html")),

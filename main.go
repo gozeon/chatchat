@@ -62,6 +62,7 @@ func main() {
 		c.Logger().Print(c.Logger().Level())
 		return c.Redirect(302, c.Echo().Reverse("Band"))
 	})
+
 	e.GET("/chat", func(c echo.Context) error {
 		debug := c.QueryParam("debug")
 		return c.Render(http.StatusOK, "chat.html", map[string]interface{}{
@@ -71,6 +72,7 @@ func main() {
 			"Debug":  debug,
 		})
 	})
+
 	e.GET("/band", func(c echo.Context) error {
 		return c.Render(http.StatusOK, "band.html", map[string]interface{}{
 			"title":      "Band",
@@ -94,6 +96,10 @@ func main() {
 			"Other":      other.Get(),
 		})
 	}).Name = "Other"
+
+	e.GET("/link", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "link.html", nil)
+	})
 
 	e.POST("/dbsave", func(c echo.Context) (err error) {
 		bucketName := c.FormValue("bucketName")
@@ -136,6 +142,7 @@ func main() {
 
 		return c.String(http.StatusOK, filepath.ToSlash(p))
 	})
+
 	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 
 }
