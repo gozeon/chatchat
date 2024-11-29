@@ -26,28 +26,33 @@ func NewAvatar(db *database.BoltDB) Avatar {
 }
 
 func (b Avatar) Init() {
-	b.db.CreateBucketIfNotExists("avatar")
+	avatar, _ := b.db.GetBucket("avatar")
 
-	avatar := Avatar{
-		WhiteList: []string{"all"},
-		User: struct {
-			Name   string `json:"name"`
-			Avatar string `json:"avatar"`
-		}{
-			Name:   "",
-			Avatar: "//gw.alicdn.com/tfs/TB1DYHLwMHqK1RjSZFEXXcGMXXa-56-62.svg",
-		},
-		Robot: struct {
-			Name   string `json:"name"`
-			Avatar string `json:"avatar"`
-		}{
-			Name:   "",
-			Avatar: "//gw.alicdn.com/tfs/TB1U7FBiAT2gK0jSZPcXXcKkpXa-108-108.jpg",
-		},
+	if avatar == nil {
+		b.db.CreateBucketIfNotExists("avatar")
+
+		avatar := Avatar{
+			WhiteList: []string{"all"},
+			User: struct {
+				Name   string `json:"name"`
+				Avatar string `json:"avatar"`
+			}{
+				Name:   "",
+				Avatar: "//gw.alicdn.com/tfs/TB1DYHLwMHqK1RjSZFEXXcGMXXa-56-62.svg",
+			},
+			Robot: struct {
+				Name   string `json:"name"`
+				Avatar string `json:"avatar"`
+			}{
+				Name:   "",
+				Avatar: "//gw.alicdn.com/tfs/TB1U7FBiAT2gK0jSZPcXXcKkpXa-108-108.jpg",
+			},
+		}
+
+		v, _ := json.Marshal(avatar)
+		b.db.Put("avatar", []byte("config"), v)
 	}
 
-	v, _ := json.Marshal(avatar)
-	b.db.Put("avatar", []byte("config"), v)
 }
 
 func (b Avatar) Get() Avatar {

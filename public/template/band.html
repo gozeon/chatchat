@@ -18,31 +18,29 @@
 
 {{ define "script" }}
 <script>
-    const { fromEvent, debounceTime, map, filter } = rxjs
-
-    fromEvent(document.querySelector('#name'), "input")
+    rxjs.fromEvent(document.querySelector('#name'), "input")
         .pipe(
-            debounceTime(500),
-            map(event => event.target.value)
+            rxjs.debounceTime(500),
+            rxjs.map(event => event.target.value)
         )
         .subscribe(value => {
             saveConfig("band", "name", value)
         })
 
-    fromEvent(document.querySelector('#url'), "input")
+    rxjs.fromEvent(document.querySelector('#url'), "input")
         .pipe(
-            debounceTime(500),
-            map(event => event.target.value)
+            rxjs.debounceTime(500),
+            rxjs.map(event => event.target.value)
         )
         .subscribe(value => {
             saveConfig("band", "url", value)
         })
 
-    fromEvent(document.querySelector('#logo'), 'change')
+    rxjs.fromEvent(document.querySelector('#logo'), 'change')
         .pipe(
             // 过滤出有效的文件选择
-            filter(event => event.target.files.length > 0),
-            map(event => event.target.files[0]) // 获取第一个文件
+            rxjs.filter(event => event.target.files.length > 0),
+            rxjs.map(event => event.target.files[0]) // 获取第一个文件
         ).subscribe(file => {
             // 检查文件是否是图片
             if (file && file.type.startsWith('image/')) {

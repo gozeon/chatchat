@@ -9,12 +9,10 @@
 
 {{ define "script" }}
 <script>
-    const { fromEvent, debounceTime, map, filter } = rxjs
-
-    fromEvent(document.querySelector('#placeholder'), "input")
+    rxjs.fromEvent(document.querySelector('#placeholder'), "input")
         .pipe(
-            debounceTime(500),
-            map(event => event.target.value)
+            rxjs.debounceTime(500),
+            rxjs.map(event => event.target.value)
         )
         .subscribe(value => {
             saveConfig("other", "placeholder", value)

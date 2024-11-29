@@ -1,6 +1,8 @@
 package model
 
-import "chatchat/database"
+import (
+	"chatchat/database"
+)
 
 type Band struct {
 	Logo string `json:"logo"`
@@ -17,10 +19,14 @@ func NewBand(db *database.BoltDB) Band {
 }
 
 func (b Band) Init() {
-	b.db.CreateBucketIfNotExists("band")
-	b.db.Put("band", []byte("logo"), []byte("/static/logo.png"))
-	b.db.Put("band", []byte("url"), []byte("/chat"))
-	b.db.Put("band", []byte("name"), []byte("客服"))
+	band, _ := b.db.GetBucket("band")
+
+	if band == nil {
+		b.db.CreateBucketIfNotExists("band")
+		b.db.Put("band", []byte("logo"), []byte("/static/logo.png"))
+		b.db.Put("band", []byte("url"), []byte("/chat"))
+		b.db.Put("band", []byte("name"), []byte("客服"))
+	}
 }
 
 func (b Band) Get() Band {

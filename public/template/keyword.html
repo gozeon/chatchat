@@ -1,0 +1,31 @@
+{{ template "_base.html" . }}
+
+{{ define "page" }}
+<div class="w-100 h-100 d-flex flex-column">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" type="button" role="tab"
+                aria-selected="true" data-url="/keyword-list">关键词</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" type="button" role="tab"
+                aria-selected="false" data-url="/keyword-default">默认回复</button>
+        </li>
+    </ul>
+    <iframe src="/keyword-list" frameborder="0" class="flex-fill" id="keywordIframe"></iframe>
+</div>
+{{ end }}
+
+{{ define "script" }}
+<script>
+    const triggerTabList = document.querySelectorAll('#myTab button')
+    triggerTabList.forEach(triggerEl => {
+        const tabTrigger = new bootstrap.Tab(triggerEl)
+
+        triggerEl.addEventListener('click', event => {
+            event.preventDefault()
+            document.querySelector('#keywordIframe').src =  triggerEl.dataset.url;
+        })
+    })
+</script>
+{{ end }}

@@ -15,9 +15,12 @@ func NewOther(db *database.BoltDB) Other {
 }
 
 func (b Other) Init() {
-	b.db.CreateBucketIfNotExists("other")
-	b.db.Put("other", []byte("placeholder"), []byte("输入您想咨询的问题"))
+	other, _ := b.db.GetBucket("other")
 
+	if other == nil {
+		b.db.CreateBucketIfNotExists("other")
+		b.db.Put("other", []byte("placeholder"), []byte("输入您想咨询的问题"))
+	}
 }
 
 func (b Other) Get() Other {

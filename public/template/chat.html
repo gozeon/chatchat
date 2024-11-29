@@ -51,42 +51,15 @@
                 avatarWhiteList: {{.Avatar.WhiteList}},
                 robot: {{.Avatar.Robot}},
                 user: {{.Avatar.User}},
+                messages: JSON.parse("{{.Message}}"),
+                quickReplies: JSON.parse("{{.Quick}}"),
                 toolbar: [
                     {
                         type: 'image',
                         icon: 'image',
                         title: '相册',
                     },
-                ],
-                quickReplies: [
-                    {
-                        name: '发送文本',
-                        isHighlight: true,
-                    },
-                    {
-                        name: '可见文本',
-                        type: 'text',
-                        text: '实际发送的文本',
-                        isNew: true,
-                    },
-                    {
-                        name: '点击跳转',
-                        type: 'url',
-                        url: 'https://www.taobao.com/',
-                    },
-                    {
-                        name: '唤起卡片',
-                        type: 'card',
-                        card: {
-                            code: 'knowledge',
-                            data: {
-                                text: '这是一个富文本卡片',
-                            },
-                        },
-                    },
-                ],
-
-                
+                ],    
                 
                 feedback: {
                     // 点赞后出的文本
@@ -116,39 +89,17 @@
                     // 提交反馈后出的文本
                     textAfterSubmit: '',
                 },
-
-                messages: [
-                    {
-                        code: 'system',
-                        data: {
-                            text: '智能助理进入对话，为您服务'
-                        }
-                    },
-                    {
-                        code: 'text',
-                        data: {
-                            text: '智能助理为您服务，请问有什么可以帮您？',
-                        },
-                    },
-                ],
+     
             },
             requests: {
                 send: function (msg) {
                     if (msg.type === 'text') {
-                        // return {
-                        //     url: '//api.server.com/ask',
-                        //     data: {
-                        //         q: msg.content.text,
-                        //     },
-                        // };
-
-                        // return Promise.resolve({
-                        //     code: 'text',
-                        //     data: {
-                        //         text: "aaaaaaaaaaaaaaaaa",
-                        //     },
-                        // })
-                        return null
+                        return {
+                            url: '/reply',
+                            data: {
+                                q: msg.content.text,
+                            },
+                        };
                     }
                 },
                 evaluate(data) {

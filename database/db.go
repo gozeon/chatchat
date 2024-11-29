@@ -97,3 +97,26 @@ func (db *BoltDB) Delete(bucketName string, key []byte) error {
 		return bucket.Delete(key)
 	})
 }
+
+// 获取指定桶的所有键值对
+func (db *BoltDB) GetAllKeysAndValues(bucketName string) (map[string]string, error) {
+	result := make(map[string]string)
+
+	// 以读取模式打开数据库
+	err := db.View(func(tx *bbolt.Tx) error {
+		// 获取指定的桶
+		bucket := tx.Bucket([]byte(bucketName))
+		if bucket == nil {
+			return fmt.Errorf("bucket %s not found", bucketName)
+		}
+
+		bucket.ForEach(func(k, v []byte) error {
+			result[string(k)] = string(v)
+			return nil
+		})
+
+		return nil
+	})
+
+	return result, err
+}

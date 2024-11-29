@@ -4,6 +4,8 @@ import (
 	"chatchat/database"
 	"chatchat/model"
 	"chatchat/public"
+	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -30,7 +32,7 @@ func init() {
 func main() {
 	// 创建并打开数据库
 	db := &database.BoltDB{}
-	err := db.Open("example.db")
+	err := db.Open("chatchat.db")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,11 +41,15 @@ func main() {
 	band := model.NewBand(db)
 	avatar := model.NewAvatar(db)
 	other := model.NewOther(db)
+	message := model.NewMessage(db)
+	keyword := model.NewKeyword(db)
 
 	// 初始化
 	band.Init()
 	avatar.Init()
 	other.Init()
+	message.Init()
+	keyword.Init()
 
 	e := echo.New()
 	e.Renderer = public.New()
@@ -55,7 +61,9 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.StaticFS("/", public.StaticDir)
+	// e.StaticFS("/", public.StaticDir)
+	e.Static("/", "public")
+
 	e.Static("/upload", "upload").Name = "Upload"
 
 	e.GET("/", func(c echo.Context) error {
@@ -66,10 +74,12 @@ func main() {
 	e.GET("/chat", func(c echo.Context) error {
 		debug := c.QueryParam("debug")
 		return c.Render(http.StatusOK, "chat.html", map[string]interface{}{
-			"Band":   band.Get(),
-			"Avatar": avatar.Get(),
-			"Other":  other.Get(),
-			"Debug":  debug,
+			"Band":    band.Get(),
+			"Avatar":  avatar.Get(),
+			"Other":   other.Get(),
+			"Message": message.Get("default"),
+			"Quick":   message.Get("quick"),
+			"Debug":   debug,
 		})
 	})
 
@@ -99,6 +109,77 @@ func main() {
 
 	e.GET("/link", func(c echo.Context) error {
 		return c.Render(http.StatusOK, "link.html", nil)
+	})
+
+	e.GET("/message", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "message.html", map[string]interface{}{
+			"title":      "Message",
+			"ActivePage": "message",
+			"Message":    message.Get("default"),
+			"Quick":      message.Get("quick"),
+		})
+	})
+
+	e.GET("/quick", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "quick.html", map[string]interface{}{
+			"title":      "Quick",
+			"ActivePage": "quick",
+			"Message":    message.Get("default"),
+			"Quick":      message.Get("quick"),
+		})
+	})
+
+	e.GET("/keyword", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "keyword.html", map[string]interface{}{
+			"title":      "Keyword",
+			"ActivePage": "keyword",
+			"Band":       band.Get(),
+		})
+	})
+
+	e.GET("/keyword-default", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "keyword-default.html", map[string]interface{}{
+			"title":      "Keyword",
+			"ActivePage": "keyword",
+			"Message":    keyword.Get("default"),
+		})
+	})
+
+	e.GET("/keyword-list", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "keyword-list.html", map[string]interface{}{
+			"title":       "Keyword",
+			"ActivePage":  "keyword",
+			"KeywordList": keyword.GetList(),
+		})
+	})
+
+	e.Any("/reply", func(c echo.Context) error {
+		var msg string
+		var reply map[string]any
+
+		var q struct {
+			Q string `json:"q" form:"q" query:"q"`
+		}
+		err := c.Bind(&q)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, nil)
+		}
+
+		msg = keyword.Get(q.Q).(string)
+
+		fmt.Println()
+		if len(msg) == 0 {
+			msg = keyword.Get("default").(string)
+		}
+
+		json.Unmarshal([]byte(msg), &reply)
+
+		if len(reply) == 0 {
+			// 不回复
+			return c.JSON(http.StatusOK, nil)
+		}
+
+		return c.JSON(http.StatusOK, reply)
 	})
 
 	e.POST("/dbsave", func(c echo.Context) (err error) {
