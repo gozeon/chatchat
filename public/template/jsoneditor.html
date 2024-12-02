@@ -4,11 +4,13 @@
 <script src="/static/lodash/lodash.min.js"></script>
 <script src="/static/monaco-editor/min/vs/loader.js"></script>
 <script>
+    // iframe
+    // 接参数：bucket，key
     require.config({ paths: { vs: location.origin + '/static/monaco-editor/min/vs' } });
 
     require(['vs/editor/editor.main'], function () {
         window.editor = monaco.editor.create(document.getElementById('editor'), {
-            value: JSON.stringify(JSON.parse("{{.Message}}"), null, 4),
+            value: JSON.stringify(JSON.parse("{{.Value}}"), null, 4),
             language: 'json',
             automaticLayout: true
         });
@@ -22,9 +24,9 @@
             rxjs.debounceTime(500),
             rxjs.filter(v => !_.isError(_.attempt(JSON.parse, v))),
         ).subscribe(value => {
-            window.parent.saveConfig("keyword", "default", value)
+            window.parent.saveConfig("{{.Bucket}}", "{{.Key}}", value)
         })
-        editor.onDidChangeModelContent(function() {
+        editor.onDidChangeModelContent(function () {
             // console.log(editor.getValue())
             editorChange$.next(editor.getValue())
         })

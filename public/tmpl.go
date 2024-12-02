@@ -18,7 +18,7 @@ func New() *tmpl {
 	// 独立页面 、iframe
 	templates["chat.html"] = template.Must(template.ParseFS(TemplateDir, "template/chat.html"))
 	templates["link.html"] = template.Must(template.ParseFS(TemplateDir, "template/link.html"))
-	templates["keyword-default.html"] = template.Must(template.ParseFS(TemplateDir, "template/keyword-default.html"))
+	templates["jsoneditor.html"] = template.Must(template.ParseFS(TemplateDir, "template/jsoneditor.html"))
 	templates["keyword-list.html"] = template.Must(template.ParseFS(TemplateDir, "template/keyword-list.html"))
 
 	// 基础设置

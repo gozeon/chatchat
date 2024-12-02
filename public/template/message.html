@@ -1,47 +1,8 @@
 {{ template "_base.html" . }}
 
 {{ define "page" }}
-<div id="editor" class="w-100 h-100"></div>
+<iframe src="/jsoneditor?bucket=message&key=default" frameborder="0" class="w-100 h-100"></iframe>
 {{ end }}
 
 {{ define "script" }}
-<script src="/static/monaco-editor/min/vs/loader.js"></script>
-<script>
-    require.config({ paths: { vs: location.origin + '/static/monaco-editor/min/vs' } });
-
-    require(['vs/editor/editor.main'], function () {
-        window.editor = monaco.editor.create(document.getElementById('editor'), {
-            value: JSON.stringify(JSON.parse("{{.Message}}"), null, 4),
-            language: 'json',
-            automaticLayout: true
-        });
-
-        // editor.onDidBlurEditorText(function () {
-        //     console.log(editor.getValue())
-        // })
-
-        const editorChange$ = new rxjs.Subject()
-        editorChange$.pipe(
-            rxjs.debounceTime(500),
-            rxjs.filter(v => !_.isError(_.attempt(JSON.parse, v))),
-        ).subscribe(value => {
-            saveConfig("message", "default", value)
-        })
-        editor.onDidChangeModelContent(function() {
-            // console.log(editor.getValue())
-            editorChange$.next(editor.getValue())
-        })
-
-        rxjs.fromEvent(window, 'resize').subscribe(() => editor.layout())
-
-        iframeMode$.subscribe(v => {
-            document.querySelector('#pageroot').classList.remove('flex-fill')
-            document.querySelector('#pageroot').style.width = '200px'
-            editor.layout();
-            document.querySelector('#pageroot').classList.add('flex-fill')
-            document.querySelector('#pageroot').style.width = 'unset'
-            editor.layout();
-        })
-    });
-</script>
 {{ end }}

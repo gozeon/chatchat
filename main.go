@@ -71,6 +71,19 @@ func main() {
 		return c.Redirect(302, c.Echo().Reverse("Band"))
 	})
 
+	e.GET("/jsoneditor", func(c echo.Context) error {
+		bucket := c.QueryParam("bucket")
+		key := c.QueryParam("key")
+
+		value, _ := db.Get(bucket, []byte(key))
+
+		return c.Render(http.StatusOK, "jsoneditor.html", map[string]interface{}{
+			"Bucket": bucket,
+			"Key":    key,
+			"Value":  string(value),
+		})
+	})
+
 	e.GET("/chat", func(c echo.Context) error {
 		debug := c.QueryParam("debug")
 		return c.Render(http.StatusOK, "chat.html", map[string]interface{}{
