@@ -22,7 +22,7 @@
         const editorChange$ = new rxjs.Subject()
         editorChange$.pipe(
             rxjs.debounceTime(500),
-            rxjs.filter(v => !_.isError(_.attempt(JSON.parse, v))),
+            rxjs.filter(v => _.isEmpty(v) || !_.isError(_.attempt(JSON.parse, v))),
         ).subscribe(value => {
             window.parent.saveConfig("{{.Bucket}}", "{{.Key}}", value)
         })
