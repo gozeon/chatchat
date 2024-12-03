@@ -61,8 +61,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	// e.StaticFS("/", public.StaticDir)
-	e.Static("/", "public")
+	e.StaticFS("/", public.StaticDir)
 
 	e.Static("/upload", "upload").Name = "Upload"
 
