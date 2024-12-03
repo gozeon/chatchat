@@ -4,15 +4,29 @@
 <script src="/static/lodash/lodash.min.js"></script>
 <script src="/static/monaco-editor/min/vs/loader.js"></script>
 <script>
+    // 获取当前页面的 URL 查询字符串参数
+    const params = new URLSearchParams(window.location.search);
+
+    const safeValue = value => {
+        if(_.isEmpty(value)) {
+            return value
+        }
+        return JSON.stringify(JSON.parse(value), null, 4)
+    }
+
     // iframe
     // 接参数：bucket，key
     require.config({ paths: { vs: location.origin + '/static/monaco-editor/min/vs' } });
 
     require(['vs/editor/editor.main'], function () {
         window.editor = monaco.editor.create(document.getElementById('editor'), {
-            value: JSON.stringify(JSON.parse("{{.Value}}"), null, 4),
+            value: safeValue("{{.Value}}"),
             language: 'json',
-            automaticLayout: true
+            automaticLayout: true,
+            readOnly: Boolean(params.readOnly),
+            minimap: {
+                enabled: Boolean(params.minimap)  // 禁用右侧迷你地图
+            }
         });
 
         // editor.onDidBlurEditorText(function () {

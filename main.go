@@ -150,11 +150,16 @@ func main() {
 		})
 	})
 
-	e.GET("/keyword-default", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "keyword-default.html", map[string]interface{}{
-			"title":      "Keyword",
-			"ActivePage": "keyword",
-			"Message":    keyword.Get("default"),
+	e.GET("/keyword-edit", func(c echo.Context) error {
+		bucket := c.QueryParam("bucket")
+		key := c.QueryParam("key")
+
+		value, _ := db.Get(bucket, []byte(key))
+
+		return c.Render(http.StatusOK, "keyword-edit.html", map[string]interface{}{
+			"Bucket": bucket,
+			"Key":    key,
+			"Value":  string(value),
 		})
 	})
 
@@ -168,7 +173,7 @@ func main() {
 
 	e.Any("/reply", func(c echo.Context) error {
 		var msg string
-		var reply map[string]any
+		var reply interface{}
 
 		var q struct {
 			Q string `json:"q" form:"q" query:"q"`
@@ -187,11 +192,6 @@ func main() {
 
 		json.Unmarshal([]byte(msg), &reply)
 
-		if len(reply) == 0 {
-			// 不回复
-			return c.JSON(http.StatusOK, nil)
-		}
-
 		return c.JSON(http.StatusOK, reply)
 	})
 
@@ -205,6 +205,28 @@ func main() {
 			return
 		}
 
+		return c.NoContent(http.StatusOK)
+	})
+
+	e.GET("/dball", func(c echo.Context) error {
+		bucket := c.QueryParam("bucket")
+		result, err := db.GetAllKeysAndValues(bucket)
+
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusOK, result)
+	})
+
+	e.GET("/dbdel", func(c echo.Context) error {
+		bucket := c.QueryParam("bucket")
+		key := c.QueryParam("key")
+		err := db.Delete(bucket, []byte(key))
+
+		if err != nil {
+			return err
+		}
 		return c.NoContent(http.StatusOK)
 	})
 

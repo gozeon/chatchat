@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
+
+<input type="text" class="form-control mb-2" value="{{.Key}}" id="keyInput" />
+
+<div id="editor" class="w-100" style="height: calc(100vh - 50px);"></div>
+
+<script src="/static/lodash/lodash.min.js"></script>
+<script src="/static/rxjs/dist/bundles/rxjs.umd.min.js"></script>
+<script src="/static/monaco-editor/min/vs/loader.js"></script>
+<script>
+    const oldKey = "{{.Key}}"
+    require.config({ paths: { vs: location.origin + '/static/monaco-editor/min/vs' } });
+
+    const safeValue = value => {
+        if(_.isEmpty(value)) {
+            return value
+        }
+        return JSON.stringify(JSON.parse(value), null, 4)
+    }
+    require(['vs/editor/editor.main'], function () {
+        const editor = monaco.editor.create(document.getElementById('editor'), {
+            value: safeValue("{{.Value}}"),
+            language: 'json',
+            automaticLayout: true,
+        });
+
+        // editor.onDidBlurEditorText(function () {
+        //     console.log(editor.getValue())
+        // })
+
+
+        editor.onDidChangeModelContent(function () {
+            // console.log(editor.getValue())
+        })
+
+        rxjs.fromEvent(window, 'resize').subscribe(() => editor.layout())
+
+        // window.parent.iframeMode$.subscribe(v => {
+        //     editor.layout();
+        // })
+
+        window.getValue = () => {
+            return {
+                key: document.querySelector('#keyInput').value,
+                value: editor.getValue(),
+            }
+        }
+    });
+</script>

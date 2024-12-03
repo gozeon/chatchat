@@ -20,6 +20,7 @@ func New() *tmpl {
 	templates["link.html"] = template.Must(template.ParseFS(TemplateDir, "template/link.html"))
 	templates["jsoneditor.html"] = template.Must(template.ParseFS(TemplateDir, "template/jsoneditor.html"))
 	templates["keyword-list.html"] = template.Must(template.ParseFS(TemplateDir, "template/keyword-list.html"))
+	templates["keyword-edit.html"] = template.Must(template.ParseFS(TemplateDir, "template/keyword-edit.html"))
 
 	// 基础设置
 	templates["band.html"] = template.Must(template.ParseFS(TemplateDir, "template/_base.html", "template/band.html"))

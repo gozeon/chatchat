@@ -23,6 +23,11 @@
                 <a class="nav-link link-light {{if eq .ActivePage "message"}}active{{end}}" aria-current="page" href="/message">默认消息</a>
                 <a class="nav-link link-light {{if eq .ActivePage "quick"}}active{{end}}" aria-current="page" href="/quick">快捷短语</a>
                 <a class="nav-link link-light {{if eq .ActivePage "keyword"}}active{{end}}" aria-current="page" href="/keyword">关键词匹配消息</a>
+
+                <strong>参考链接</strong>
+                <a class="nav-link link-light" target="_blank" href="https://github.com/gozeon/chatchat">Github</a>
+                <a class="nav-link link-light" target="_blank" href="https://chatui.io/">ChatUI</a>
+                <a class="nav-link link-light" target="_blank" href="https://chatbot.console.aliyun.com/ChatSDK">ChatSDK</a>
             </nav>
         </div>
 
@@ -78,6 +83,9 @@
     <script src="/static/sweetalert2/dist/sweetalert2.min.js"></script>
     <script src="/static/lodash/lodash.min.js"></script>
     <script>
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
         var iframeMode$ = rxjs.fromEvent(document.querySelectorAll('input[type="radio"][name="iframeMode"]'), 'change')
             .pipe(
                 rxjs.map(event => event.target.value)
@@ -109,6 +117,18 @@
                 resolve()
             }).fail(function (err) {
                 Toast.fire({ icon: "error", title: "保存失败，请稍后重试" });
+                reject(err)
+            }).done(function () {
+                refreshIframe()
+            })
+        })
+
+        var deleteConfig = (bucket, key) => new Promise((resolve, reject) => {
+            $.get('/dbdel', { bucket, key, }, function (data, textStatus) {
+                Toast.fire({ icon: "success", title: "删除成功" });
+                resolve()
+            }).fail(function (err) {
+                Toast.fire({ icon: "error", title: "删除失败，请稍后重试" });
                 reject(err)
             }).done(function () {
                 refreshIframe()

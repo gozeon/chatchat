@@ -25,7 +25,7 @@ func (b Band) Init() {
 		b.db.CreateBucketIfNotExists("band")
 		b.db.Put("band", []byte("logo"), []byte("/static/logo.png"))
 		b.db.Put("band", []byte("url"), []byte("/chat"))
-		b.db.Put("band", []byte("name"), []byte("客服"))
+		b.db.Put("band", []byte("name"), []byte("chatchat"))
 	}
 }
 
